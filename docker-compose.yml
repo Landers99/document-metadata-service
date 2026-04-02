@@ -1,0 +1,34 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: document-metadata-postgres
+    environment:
+      POSTGRES_DB: document_metadata
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d document_metadata"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: document-metadata-api
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ConnectionStrings__DefaultConnection: Host=postgres;Port=5432;Database=document_metadata;Username=postgres;Password=postgres
+    ports:
+      - "8080:8080"
+
+volumes:
+  postgres_data:
