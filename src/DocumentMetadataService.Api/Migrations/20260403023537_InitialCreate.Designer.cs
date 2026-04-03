@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace DocumentMetadataService.Api.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260402000918_InitialCreate")]
+    [Migration("20260403023537_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -126,8 +126,8 @@ namespace DocumentMetadataService.Api.Migrations
 
                     b.Property<string>("Email")
                         .IsRequired()
-                        .HasMaxLength(320)
-                        .HasColumnType("character varying(320)");
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
 
                     b.Property<string>("PasswordHash")
                         .IsRequired()
