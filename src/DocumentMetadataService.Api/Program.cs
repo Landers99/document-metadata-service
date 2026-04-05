@@ -16,6 +16,7 @@ var jwtOptions = builder.Configuration
     .Get<JwtOptions>() ?? throw new InvalidOperationException("JWT settings are missing.");
 
 builder.Services.AddScoped<IJwtTokenService, JwtTokenService>();
+builder.Services.AddScoped<IDocumentService, DocumentService>();
 
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
