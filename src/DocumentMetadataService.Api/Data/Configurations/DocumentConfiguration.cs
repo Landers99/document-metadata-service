@@ -21,11 +21,11 @@ public class DocumentConfiguration : IEntityTypeConfiguration<Document>
 
         builder.Property(x => x.FileName)
             .IsRequired()
-            .HasMaxLength(260);
+            .HasMaxLength(255);
 
         builder.Property(x => x.ContentType)
             .IsRequired()
-            .HasMaxLength(255);
+            .HasMaxLength(100);
 
         builder.Property(x => x.FileSizeBytes)
             .IsRequired();
@@ -38,6 +38,11 @@ public class DocumentConfiguration : IEntityTypeConfiguration<Document>
 
         builder.Property(x => x.UpdatedAtUtc)
             .IsRequired();
+
+        builder.HasOne(x => x.Owner)
+            .WithMany()
+            .HasForeignKey(x => x.OwnerId)
+            .OnDelete(DeleteBehavior.Cascade);
 
         builder.HasIndex(x => x.OwnerId);
         builder.HasIndex(x => x.Title);
