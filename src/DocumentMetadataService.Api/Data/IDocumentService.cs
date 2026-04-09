@@ -10,6 +10,17 @@ public interface IDocumentService
             CreateDocumentRequest request,
             CancellationToken cancellationToken);
 
+    Task<DocumentResponse?> UpdateAsync(
+            Guid ownerId,
+            Guid documentId,
+            UpdateDocumentRequest request,
+            CancellationToken cancellationToken);
+
+    Task<bool> DeleteAsync(
+            Guid ownerId,
+            Guid documentId,
+            CancellationToken cancellationToken);
+
     Task<DocumentResponse?> GetByIdAsync(
             Guid ownerId,
             Guid documentId,

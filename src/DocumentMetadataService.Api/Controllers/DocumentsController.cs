@@ -41,9 +41,34 @@ public sealed class DocumentsController : ControllerBase
     {
         var userId = _currentUserService.GetUserId();
 
-        var document = await _documentService.GetByIdAsync(userId, id, cancellationToken);
+        var response = await _documentService.GetByIdAsync(userId, id, cancellationToken);
 
-        return document is null ? NotFound() : Ok(document);
+        return response is null ? NotFound() : Ok(response);
+    }
+
+    [HttpPut("{id:guid}")]
+    public async Task<ActionResult<DocumentResponse>> Update(
+            [FromBody] UpdateDocumentRequest request,
+            Guid id,
+            CancellationToken cancellationToken)
+    {
+        var userId = _currentUserService.GetUserId();
+
+        var response = await _documentService.UpdateAsync(userId, id, request, cancellationToken);
+
+        return response is null ? NotFound(new { error = "Document not found." }) : Ok(response);
+    }
+
+    [HttpDelete("id:guid")]
+    public async Task<ActionResult> Delete(
+            Guid id,
+            CancellationToken cancellationToken)
+    {
+        var userId = _currentUserService.GetUserId();
+
+        var success = await _documentService.DeleteAsync(userId, id, cancellationToken);
+
+        return (success) ? NoContent() : NotFound(new { error = "Document not found." });
     }
 
     [HttpGet]
@@ -60,15 +85,5 @@ public sealed class DocumentsController : ControllerBase
         var response = await _documentService.ListAsync(userId, page, pageSize, cancellationToken);
 
         return Ok(response);
-    }
-
-    [HttpGet("me")]
-    public IActionResult Me()
-    {
-        return Ok(new
-        {
-            UserId = _currentUserService.GetUserId(),
-            Email = _currentUserService.GetEmail()
-        });
     }
 }

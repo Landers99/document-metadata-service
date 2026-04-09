@@ -40,6 +40,50 @@ public class DocumentService : IDocumentService
         return Map(document);
     }
 
+    public async Task<DocumentResponse?> UpdateAsync(
+            Guid ownerId,
+            Guid documentId,
+            UpdateDocumentRequest request,
+            CancellationToken cancellationToken)
+    {
+        var now = DateTime.UtcNow;
+
+        var document = await _dbContext.Documents
+            .FirstOrDefaultAsync(x => x.OwnerId == ownerId && x.Id == documentId, cancellationToken);
+
+        if (document is not null)
+        {
+            document.Title = request.Title.Trim();
+            document.Description = request.Description?.Trim();
+            document.FileName = request.FileName.Trim();
+            document.ContentType = request.ContentType.Trim();
+            document.FileSizeBytes = request.FileSizeBytes;
+            document.ExternalReference = request.ExternalReference?.Trim();
+            document.UpdatedAtUtc = now;
+
+            await _dbContext.SaveChangesAsync(cancellationToken);
+        }
+
+        return document is null ? null : Map(document);
+    }
+
+    public async Task<bool> DeleteAsync(
+            Guid ownerId,
+            Guid documentId,
+            CancellationToken cancellationToken)
+    {
+        var document = await _dbContext.Documents
+            .FirstOrDefaultAsync(x => x.OwnerId == ownerId && x.Id == documentId, cancellationToken);
+
+        if (document is not null)
+        {
+            _dbContext.Documents.Remove(document);
+            await _dbContext.SaveChangesAsync(cancellationToken);
+        }
+
+        return document is null ? false : true;
+    }
+
     public async Task<DocumentResponse?> GetByIdAsync(
             Guid ownerId,
             Guid documentId,
